@@ -1,119 +1,101 @@
-package com.smsindia.app.ui;
+package com.smsindia.app.worker;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.telephony.SubscriptionInfo;
-import android.telephony.SubscriptionManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
+import android.telephony.SmsManager;
+import android.util.Log;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
+import androidx.core.app.NotificationCompat;
+import androidx.work.ForegroundInfo;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.smsindia.app.R;
-import com.smsindia.app.worker.SmsWorker;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class SMSFragment extends Fragment {
+public class SmsWorker extends Worker {
 
-    private ActivityResultLauncher<String> smsPermissionLauncher;
-    private ActivityResultLauncher<String> phonePermissionLauncher;
+    private static final String TAG = "SmsWorker";
+    private static final String CHANNEL_ID = "smsindia_channel";
+    private FirebaseFirestore db;
 
+    public SmsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
+        db = FirebaseFirestore.getInstance();
+    }
+
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_sms, container, false);
-
-        MaterialButton btnStart = v.findViewById(R.id.btn_start);
-        MaterialButton btnStop = v.findViewById(R.id.btn_stop);
-
-        smsPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                granted -> {
-                    if (!granted) Toast.makeText(requireContext(), "SMS permission required!", Toast.LENGTH_SHORT).show();
-                });
-
-        phonePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                granted -> {
-                    if (!granted) Toast.makeText(requireContext(), "Phone permission required!", Toast.LENGTH_SHORT).show();
-                });
-
-        btnStart.setOnClickListener(view -> startSending());
-        btnStop.setOnClickListener(view -> stopSending());
-
-        return v;
-    }
-
-    private void startSending() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            smsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
-            return;
-        }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
-            return;
-        }
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(requireContext(), "Please login first", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int simId = getSimId(); // automatically choose first SIM
-        Data input = new Data.Builder()
-                .putString("userId", user.getUid())
-                .putInt("subscriptionId", simId)
-                .putInt("maxPerRun", 10)
-                .build();
-
-        OneTimeWorkRequest req = new OneTimeWorkRequest.Builder(SmsWorker.class)
-                .setInputData(input)
-                .build();
-
-        WorkManager.getInstance(requireContext())
-                .enqueueUniqueWork("sms_queue_worker_" + user.getUid(), ExistingWorkPolicy.REPLACE, req);
-
-        Toast.makeText(requireContext(), "📤 Task started — sending SMS...", Toast.LENGTH_SHORT).show();
-    }
-
-    private void stopSending() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            WorkManager.getInstance(requireContext())
-                    .cancelUniqueWork("sms_queue_worker_" + user.getUid());
-            Toast.makeText(requireContext(), "⛔ Task stopped", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private int getSimId() {
+    public Result doWork() {
         try {
-            SubscriptionManager sm = (SubscriptionManager)
-                    requireContext().getSystemService(android.content.Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            if (sm != null) {
-                List<SubscriptionInfo> list = sm.getActiveSubscriptionInfoList();
-                if (list != null && !list.isEmpty()) {
-                    return list.get(0).getSubscriptionId(); // first SIM
-                }
-            }
+            // show permanent notification
+            setForegroundAsync(createForegroundInfo());
+
+            // get one unsent SMS and send it
+            db.collection("sms_inventory")
+                    .whereEqualTo("sent", false)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener(snapshots -> {
+                        for (QueryDocumentSnapshot doc : snapshots) {
+                            String number = doc.getString("phone");
+                            String message = doc.getString("message");
+
+                            try {
+                                SmsManager smsManager = SmsManager.getDefault();
+                                smsManager.sendTextMessage(number, null, message, null, null);
+                                db.collection("sms_inventory")
+                                        .document(doc.getId())
+                                        .update("sent", true);
+                                Log.d(TAG, "SMS sent to " + number);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Send failed: " + e.getMessage());
+                            }
+                        }
+                    });
+
+            // Sleep briefly before next try (loop effect)
+            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+
+            // Keep retrying forever (loop)
+            return Result.retry();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Worker crashed: " + e.getMessage());
+            return Result.failure();
         }
-        return -1;
+    }
+
+    private ForegroundInfo createForegroundInfo() {
+        createNotificationChannel();
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setContentTitle("SMSIndia")
+                .setContentText("🟠 SMS sending service is active")
+                .setSmallIcon(R.drawable.ic_sms)
+                .setColor(0xFFFF9800) // orange
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build();
+        return new ForegroundInfo(1, notification);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "SMSIndia Background Service",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            NotificationManager manager =
+                    getApplicationContext().getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
     }
 }

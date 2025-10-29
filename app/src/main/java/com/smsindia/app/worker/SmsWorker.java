@@ -1,59 +1,63 @@
 package com.smsindia.app.worker;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.telephony.SmsManager;
+
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-import androidx.work.ForegroundInfo;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.smsindia.app.R;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class SmsWorker extends Worker {
-
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final String CHANNEL_ID = "smsindia_channel";
+    private FirebaseFirestore db;
 
     public SmsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        db = FirebaseFirestore.getInstance();
     }
 
     @NonNull
     @Override
     public Result doWork() {
         try {
-            setForegroundAsync(createForegroundInfo("SMSIndia", "Sending messages..."));
+            setForegroundAsync(createForegroundInfo("SMS sending active..."));
 
-            db.collection("smsQueue")
-                    .whereEqualTo("status", "pending")
+            db.collection("sms_inventory")
+                    .whereEqualTo("sent", false)
+                    .limit(1)
                     .get()
-                    .addOnSuccessListener(query -> {
-                        SmsManager smsManager = SmsManager.getDefault();
-                        for (QueryDocumentSnapshot doc : query) {
-                            String phone = doc.getString("phone");
-                            String msg = doc.getString("message");
+                    .addOnSuccessListener(snapshots -> {
+                        for (QueryDocumentSnapshot doc : snapshots) {
+                            String number = doc.getString("phone");
+                            String message = doc.getString("message");
 
                             try {
-                                smsManager.sendTextMessage(phone, null, msg, null, null);
-
-                                // update status
-                                Map<String, Object> update = new HashMap<>();
-                                update.put("status", "sent");
-                                db.collection("smsQueue").document(doc.getId()).update(update);
+                                SmsManager smsManager = SmsManager.getDefault();
+                                smsManager.sendTextMessage(number, null, message, null, null);
+                                db.collection("sms_inventory")
+                                        .document(doc.getId())
+                                        .update("sent", true);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
-                    })
-                    .addOnFailureListener(Throwable::printStackTrace);
+                    });
 
-            return Result.success();
+            // Wait 1 second and requeue itself
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+            return Result.retry(); // makes it loop every second
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,16 +65,27 @@ public class SmsWorker extends Worker {
         }
     }
 
-    private ForegroundInfo createForegroundInfo(String title, String message) {
-        String channelId = "sms_worker_channel";
+    private ForegroundInfo createForegroundInfo(String message) {
+        createNotificationChannel();
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setContentTitle("SMSIndia")
+                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_sms)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
+                .build();
 
-        NotificationCompat.Builder notification =
-                new NotificationCompat.Builder(getApplicationContext(), channelId)
-                        .setContentTitle(title)
-                        .setContentText(message)
-                        .setSmallIcon(R.drawable.ic_send)
-                        .setPriority(NotificationCompat.PRIORITY_LOW);
+        return new ForegroundInfo(1, notification);
+    }
 
-        return new ForegroundInfo(1, notification.build());
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID, "SMS Sending",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            NotificationManager manager = getApplicationContext().getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
     }
 }
