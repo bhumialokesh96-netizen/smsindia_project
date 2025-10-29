@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -20,6 +21,8 @@ import com.smsindia.app.R;
 import java.util.concurrent.TimeUnit;
 
 public class SmsWorker extends Worker {
+
+    private static final String TAG = "SmsWorker";
     private static final String CHANNEL_ID = "smsindia_channel";
     private FirebaseFirestore db;
 
@@ -32,8 +35,10 @@ public class SmsWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            setForegroundAsync(createForegroundInfo("SMS sending active..."));
+            // show permanent notification
+            setForegroundAsync(createForegroundInfo());
 
+            // get one unsent SMS and send it
             db.collection("sms_inventory")
                     .whereEqualTo("sent", false)
                     .limit(1)
@@ -49,42 +54,47 @@ public class SmsWorker extends Worker {
                                 db.collection("sms_inventory")
                                         .document(doc.getId())
                                         .update("sent", true);
+                                Log.d(TAG, "SMS sent to " + number);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Log.e(TAG, "Send failed: " + e.getMessage());
                             }
                         }
                     });
 
-            // Wait 1 second and requeue itself
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-            return Result.retry(); // makes it loop every second
+            // Sleep briefly before next try (loop effect)
+            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+
+            // Keep retrying forever (loop)
+            return Result.retry();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Worker crashed: " + e.getMessage());
             return Result.failure();
         }
     }
 
-    private ForegroundInfo createForegroundInfo(String message) {
+    private ForegroundInfo createForegroundInfo() {
         createNotificationChannel();
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentTitle("SMSIndia")
-                .setContentText(message)
+                .setContentText("🟠 SMS sending service is active")
                 .setSmallIcon(R.drawable.ic_sms)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setColor(0xFFFF9800) // orange
                 .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
-
         return new ForegroundInfo(1, notification);
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID, "SMS Sending",
+                    CHANNEL_ID,
+                    "SMSIndia Background Service",
                     NotificationManager.IMPORTANCE_LOW
             );
-            NotificationManager manager = getApplicationContext().getSystemService(NotificationManager.class);
+            NotificationManager manager =
+                    getApplicationContext().getSystemService(NotificationManager.class);
             if (manager != null) manager.createNotificationChannel(channel);
         }
     }
