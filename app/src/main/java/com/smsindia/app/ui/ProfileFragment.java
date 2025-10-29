@@ -27,16 +27,27 @@ public class ProfileFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        if (auth.getCurrentUser() != null) {
-            txtEmail.setText(auth.getCurrentUser().getEmail());
-            db.collection("users").document(auth.getCurrentUser().getUid())
-                    .get().addOnSuccessListener(doc -> {
-                        if (doc.exists()) {
-                            Double bal = doc.getDouble("balance");
-                            txtBalance.setText("₹" + (bal != null ? String.format("%.2f", bal) : "0.00"));
-                        }
-                    });
+        if (auth.getCurrentUser() == null) {
+            txtEmail.setText("Not logged in");
+            txtBalance.setText("₹0.00");
+            return v;
         }
+
+        txtEmail.setText(auth.getCurrentUser().getEmail());
+
+        db.collection("users").document(auth.getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        Object balObj = doc.get("balance");
+                        double bal = 0.0;
+                        if (balObj instanceof Number) bal = ((Number) balObj).doubleValue();
+                        txtBalance.setText("₹" + String.format("%.2f", bal));
+                    } else {
+                        txtBalance.setText("₹0.00");
+                    }
+                })
+                .addOnFailureListener(e -> txtBalance.setText("Error"));
         return v;
     }
 }
