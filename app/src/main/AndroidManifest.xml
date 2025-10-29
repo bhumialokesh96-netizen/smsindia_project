@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.smsindia.app"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.smsindia.app">
 
     <!-- Required runtime permissions (must request at runtime on Android 6+) -->
     <uses-permission android:name="android.permission.SEND_SMS"/>
@@ -30,19 +32,14 @@
         </activity>
 
         <!-- Broadcast receivers used by SMS sending (status/delivery) -->
-        <!-- These receivers are non-exported for safety (only the system may deliver SMS intents). -->
         <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
         <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
 
-        <!-- WorkManager does not require you to manually register its service in manifest
-             when using androidx.work:work-runtime; left out intentionally. -->
-
-        <!-- Firebase / Google services metadata:
-             Make sure you add app/google-services.json (rename your google-services(2).json -> google-services.json)
-             so the Google plugin injects required configuration at build time. -->
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version"
-                   tools:replace="android:value" />
+        <!-- Firebase / Google services metadata -->
+        <meta-data 
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"
+            tools:replace="android:value" />
 
     </application>
 
