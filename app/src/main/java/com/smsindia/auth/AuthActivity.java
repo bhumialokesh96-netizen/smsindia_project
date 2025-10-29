@@ -2,9 +2,7 @@ package com.smsindia.app.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.smsindia.app.MainActivity;
 import com.smsindia.app.R;
@@ -19,18 +17,18 @@ public class AuthActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        // If already signed in → go to MainActivity
+        // ✅ If already logged in, go to main screen
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
 
-        // Otherwise load LoginFragment
+        // ✅ Load Login Fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.auth_container, new LoginFragment())
-                    .commit();
+                .replace(R.id.auth_container, new LoginFragment())
+                .commit();
         }
     }
 }

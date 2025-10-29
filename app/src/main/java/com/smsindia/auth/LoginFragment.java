@@ -6,16 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.material.button.MaterialButton;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.rupeedesk7.smsapp.R;
 import com.smsindia.app.MainActivity;
-import com.smsindia.app.R;
 
 public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
@@ -39,20 +36,22 @@ public class LoginFragment extends Fragment {
                 return;
             }
 
+            // ✅ Login with Firebase
             mAuth.signInWithEmailAndPassword(email, pass)
-                    .addOnSuccessListener(authResult -> {
-                        startActivity(new Intent(requireContext(), MainActivity.class));
-                        requireActivity().finish();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(requireContext(), "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnSuccessListener(authResult -> {
+                    startActivity(new Intent(requireContext(), MainActivity.class));
+                    requireActivity().finish();
+                })
+                .addOnFailureListener(e ->
+                    Toast.makeText(requireContext(), "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
         });
 
+        // ✅ Open Signup Fragment
         btnGotoSignup.setOnClickListener(view -> {
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.auth_container, new SignupFragment())
-                    .addToBackStack(null)
-                    .commit();
+                .replace(R.id.auth_container, new SignupFragment())
+                .addToBackStack(null)
+                .commit();
         });
 
         return v;

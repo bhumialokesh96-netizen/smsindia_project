@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -23,9 +24,9 @@
         android:theme="@style/Theme.SMSIndia"
         tools:replace="android:icon">
 
-        <!-- ✅ Launch Activity -->
+        <!-- ✅ Auth Activity (First screen) -->
         <activity
-            android:name=".MainActivity"
+            android:name=".auth.AuthActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,14 +34,16 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ Auth Activity -->
-        <activity android:name=".auth.AuthActivity" android:exported="false" />
+        <!-- ✅ Main Activity (after login) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
 
         <!-- ✅ SMS status receivers -->
         <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
         <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
 
-        <!-- ✅ Auto-start after reboot (optional worker trigger) -->
+        <!-- ✅ Auto-start after reboot -->
         <receiver
             android:name=".worker.BootReceiver"
             android:exported="false">
