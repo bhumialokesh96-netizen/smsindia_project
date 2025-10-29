@@ -1,4 +1,4 @@
-package com.rupeedesk7.smsapp.auth;
+package com.smsindia.app.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,15 +12,16 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.rupeedesk7.smsapp.MainActivity;
-import com.rupeedesk7.smsapp.R;
-
 import com.google.android.material.button.MaterialButton;
+
+import com.smsindia.app.MainActivity;
+import com.smsindia.app.R;
 
 public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
 
-    @Override public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         mAuth = FirebaseAuth.getInstance();
 
@@ -32,23 +33,26 @@ public class LoginFragment extends Fragment {
         btnLogin.setOnClickListener(view -> {
             String email = etEmail.getText() == null ? "" : etEmail.getText().toString().trim();
             String pass = etPassword.getText() == null ? "" : etPassword.getText().toString().trim();
+
             if (email.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(requireContext(), "Enter email & password", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             mAuth.signInWithEmailAndPassword(email, pass)
-                .addOnSuccessListener(authResult -> {
-                    startActivity(new Intent(requireContext(), MainActivity.class));
-                    requireActivity().finish();
-                })
-                .addOnFailureListener(e -> Toast.makeText(requireContext(), "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                    .addOnSuccessListener(authResult -> {
+                        startActivity(new Intent(requireContext(), MainActivity.class));
+                        requireActivity().finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(requireContext(), "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
         });
 
         btnGotoSignup.setOnClickListener(view -> {
             requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.auth_container, new SignupFragment())
-                .addToBackStack(null)
-                .commit();
+                    .replace(R.id.auth_container, new SignupFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         return v;

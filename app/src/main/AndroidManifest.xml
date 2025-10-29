@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.smsindia.app">
 
-    <!-- Required runtime permissions (must request at runtime on Android 6+) -->
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
+    <!-- ✅ Required permissions -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <!-- Declare optional telephony feature (will allow Play to filter non-telephony devices) -->
+    <!-- ✅ Optional telephony support -->
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="SMSIndia"
-        android:theme="@style/Theme.SMSIndia">
+        android:theme="@style/Theme.SMSIndia"
+        tools:replace="android:icon">
 
-        <!-- Main activity -->
-        <activity android:name=".MainActivity" android:exported="true">
+        <!-- ✅ Launch Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Broadcast receivers used by SMS sending (status/delivery) -->
+        <!-- ✅ Auth Activity -->
+        <activity android:name=".auth.AuthActivity" android:exported="false" />
+
+        <!-- ✅ SMS status receivers -->
         <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
         <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
 
-        <!-- Firebase / Google services metadata -->
-        <meta-data 
+        <!-- ✅ Handle auto-start after reboot (optional worker trigger) -->
+        <receiver
+            android:name=".worker.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ✅ Firebase configuration -->
+        <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"
             tools:replace="android:value" />
