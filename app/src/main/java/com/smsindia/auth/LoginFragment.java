@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.smsindia.R;
+import com.smsindia.app.R;
 import com.smsindia.app.MainActivity;
 
 public class LoginFragment extends Fragment {
