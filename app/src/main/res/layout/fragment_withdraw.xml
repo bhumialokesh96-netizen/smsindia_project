@@ -1,46 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <ScrollView 
 xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" 
     android:layout_width="match_parent" 
     android:layout_height="match_parent" 
-    android:padding="16dp" 
-    android:background="@color/white" 
-    tools:context=".ui.WithdrawFragment"> 
+    android:padding="16dp"> 
     <LinearLayout
-        android:orientation="vertical" 
         android:layout_width="match_parent" 
         android:layout_height="wrap_content" 
+        android:orientation="vertical" 
         android:gravity="center_horizontal"> 
-        <TextView
-            android:id="@+id/tv_balance" 
+        <!-- ✅ Missing balance 
+        TextView added --> <TextView
+            android:id="@+id/txt_withdraw_balance" 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
-            android:text="Available 
+            android:text="Your 
             Balance: ₹0.00" 
-            style="@style/u_text_lg" 
-            android:layout_marginBottom="12dp" 
+            android:textColor="@color/black" 
+            android:textSize="16sp" 
+            android:layout_marginBottom="16dp" 
+            android:textStyle="bold" 
             />
         <EditText 
-            android:id="@+id/et_amount" 
+            android:id="@+id/edit_withdraw_amount" 
             android:layout_width="match_parent" 
             android:layout_height="wrap_content" 
-            android:hint="Enter amount 
-            to withdraw" 
-            android:inputType="numberDecimal" 
-            android:padding="12dp" 
+            android:hint="Enter 
+            withdraw amount" 
+            android:inputType="number" 
             android:background="@drawable/bg_edittext" 
-            android:layout_marginBottom="12dp" 
-            />
-        <EditText 
-            android:id="@+id/et_upi" 
-            android:layout_width="match_parent" 
-            android:layout_height="wrap_content" 
-            android:hint="Enter UPI 
-            ID" 
-            android:inputType="textEmailAddress" 
-            android:padding="12dp" 
-            android:background="@drawable/bg_edittext" 
+            android:padding="10dp" 
             android:layout_marginBottom="16dp" 
             />
         <Button 
@@ -48,8 +37,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent" 
             android:layout_height="wrap_content" 
             android:text="Withdraw" 
-            style="@style/u_btn_orange" 
-            android:layout_marginTop="8dp" 
+            style="@style/u_btn_orange_sm" 
             />
     </LinearLayout>
 </ScrollView>
