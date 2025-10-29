@@ -15,14 +15,14 @@
 
         <TextView
             android:text="📤 SMS Sender"
-            style="@style/u-text-xl"
+            style="@style/u_text-xl"
             android:textColor="@color/orange_700"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
 
         <TextView
             android:text="Select your SIM and start automatic SMS sending"
-            style="@style/u-text-gray"
+            style="@style/u_text-gray"
             android:gravity="center"
             android:layout_marginBottom="24dp" />
 
@@ -34,7 +34,7 @@
 
             <Button
                 android:id="@+id/btn_start"
-                style="@style/u-btn-orange"
+                style="@style/u_btn-orange"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="▶ Start" />
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Waiting to start..."
-            style="@style/u-text-gray"
+            style="@style/u_text-gray"
             android:layout_marginTop="30dp" />
 
     </LinearLayout>

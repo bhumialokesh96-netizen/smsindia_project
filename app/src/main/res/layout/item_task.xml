@@ -17,7 +17,7 @@
         <TextView
             android:id="@+id/tv_task_title"
             android:text="Send SMS Offer Campaign"
-            style="@style/u-text-lg"
+            style="@style/u_text-lg"
             android:textColor="@color/orange_700"
             android:textStyle="bold"
             android:layout_marginBottom="4dp" />
@@ -25,7 +25,7 @@
         <TextView
             android:id="@+id/tv_task_desc"
             android:text="Send 20 SMS to users and earn ₹5"
-            style="@style/u-text-gray"
+            style="@style/u_text-gray"
             android:layout_marginBottom="8dp" />
 
         <LinearLayout
@@ -37,12 +37,12 @@
             <TextView
                 android:id="@+id/tv_task_reward"
                 android:text="Reward: ₹5.00"
-                style="@style/u-text-gray"
+                style="@style/u_text-gray"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_start_task"
-                style="@style/u-btn-orange-sm"
+                style="@style/u_btn-orange-sm"
                 android:text="Start" />
         </LinearLayout>
 
