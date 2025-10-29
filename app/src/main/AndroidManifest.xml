@@ -14,7 +14,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- ✅ Optional telephony support -->
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <application
         android:name=".App"
@@ -40,8 +42,12 @@
             android:exported="false" />
 
         <!-- ✅ SMS status receivers -->
-        <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
-        <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
+        <receiver
+            android:name=".worker.SmsStatusReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".worker.SmsDeliveredReceiver"
+            android:exported="false" />
 
         <!-- ✅ Auto-start after reboot -->
         <receiver
