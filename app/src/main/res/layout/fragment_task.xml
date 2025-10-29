@@ -1,27 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/bg_light"
-    android:padding="16dp"
-    tools:context=".app.ui.TaskFragment">
-
-    <TextView
-        android:id="@+id/tv_header"
-        android:text="📋 Available Tasks"
-        style="@style/u_text_xl"
-        android:textStyle="bold"
-        android:textColor="@color/orange_700"
-        android:layout_marginBottom="10dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_tasks"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="10dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/item_task" />
-
+<?xml version="1.0" encoding="utf-8"?> 
+<LinearLayout 
+xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent" 
+    android:orientation="vertical" 
+    android:padding="16dp"> <TextView
+        android:id="@+id/txt_task_info" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text="Task Info" 
+        android:textColor="@android:color/black" 
+        android:textSize="16sp" 
+        android:layout_margin="8dp" />
+    <ProgressBar 
+        android:id="@+id/task_progress" 
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content" 
+        style="?android:attr/progressBarStyleHorizontal" 
+        android:layout_margin="8dp" />
 </LinearLayout>
