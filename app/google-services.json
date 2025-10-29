@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1013963357851",
-    "project_id": "rupeedesk7",
-    "storage_bucket": "rupeedesk7.firebasestorage.app"
+    "project_number": "594552795081",
+    "project_id": "smsindia-6b95b",
+    "storage_bucket": "smsindia-6b95b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1013963357851:android:eea4e2e566c2244aed503e",
+        "mobilesdk_app_id": "1:594552795081:android:91b6fcb1bc0fc043770218",
         "android_client_info": {
           "package_name": "com.smsindia.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAvuTedi4hNLDTHwNt3tElmZZmwmxBC_zo"
+          "current_key": "AIzaSyD4PnA0a0vEszaoySznvWcu5MByqzDFt0c"
         }
       ],
       "services": {
