@@ -8,7 +8,6 @@ import android.telephony.SubscriptionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -31,10 +30,10 @@ import java.util.List;
 
 public class SMSFragment extends Fragment {
 
-    private MaterialButton btnStart, btnStop;
-    private TextView statusText;
     private ActivityResultLauncher<String> smsPermissionLauncher;
     private ActivityResultLauncher<String> phonePermissionLauncher;
+
+    private MaterialButton btnStart, btnStop;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -43,19 +42,19 @@ public class SMSFragment extends Fragment {
 
         btnStart = v.findViewById(R.id.btn_start);
         btnStop = v.findViewById(R.id.btn_stop);
-        statusText = v.findViewById(R.id.status_text);
 
-        // Permission launchers
-        smsPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+        smsPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
                 granted -> {
-                    if (!granted)
-                        Toast.makeText(requireContext(), "SMS permission required!", Toast.LENGTH_SHORT).show();
+                    if (granted) startSending();
+                    else Toast.makeText(requireContext(), "❌ SMS permission denied!", Toast.LENGTH_SHORT).show();
                 });
 
-        phonePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+        phonePermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
                 granted -> {
-                    if (!granted)
-                        Toast.makeText(requireContext(), "Phone permission required!", Toast.LENGTH_SHORT).show();
+                    if (granted) startSending();
+                    else Toast.makeText(requireContext(), "❌ Phone permission denied!", Toast.LENGTH_SHORT).show();
                 });
 
         btnStart.setOnClickListener(view -> startSending());
@@ -65,52 +64,59 @@ public class SMSFragment extends Fragment {
     }
 
     private void startSending() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            smsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
-            return;
+        try {
+            // 🔐 Permission checks
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                smsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
+                return;
+            }
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
+                return;
+            }
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(requireContext(), "⚠️ Please login first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int simId = getSimId();
+            if (simId == -1) {
+                Toast.makeText(requireContext(), "⚠️ No active SIM detected!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Data input = new Data.Builder()
+                    .putString("userId", user.getUid())
+                    .putInt("subscriptionId", simId)
+                    .putInt("maxPerRun", 10)
+                    .build();
+
+            OneTimeWorkRequest req = new OneTimeWorkRequest.Builder(SmsWorker.class)
+                    .setInputData(input)
+                    .build();
+
+            WorkManager.getInstance(requireContext())
+                    .enqueueUniqueWork("sms_queue_worker_" + user.getUid(),
+                            ExistingWorkPolicy.REPLACE, req);
+
+            Toast.makeText(requireContext(), "📤 Sending tasks started!", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "⚠️ Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
-            return;
-        }
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(requireContext(), "Please login first", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int simId = getSimId();
-        if (simId == -1) {
-            Toast.makeText(requireContext(), "No active SIM found!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Data input = new Data.Builder()
-                .putString("userId", user.getUid())
-                .putInt("subscriptionId", simId)
-                .build();
-
-        OneTimeWorkRequest smsWork = new OneTimeWorkRequest.Builder(SmsWorker.class)
-                .setInputData(input)
-                .build();
-
-        WorkManager.getInstance(requireContext())
-                .enqueueUniqueWork("sms_sender_" + user.getUid(), ExistingWorkPolicy.REPLACE, smsWork);
-
-        Toast.makeText(requireContext(), "🟠 SMS sending started", Toast.LENGTH_SHORT).show();
-        statusText.setText("🟠 Sending in progress...");
     }
 
     private void stopSending() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             WorkManager.getInstance(requireContext())
-                    .cancelUniqueWork("sms_sender_" + user.getUid());
-            Toast.makeText(requireContext(), "⛔ Sending stopped", Toast.LENGTH_SHORT).show();
-            statusText.setText("⛔ Stopped");
+                    .cancelUniqueWork("sms_queue_worker_" + user.getUid());
+            Toast.makeText(requireContext(), "⛔ Task stopped", Toast.LENGTH_SHORT).show();
         }
     }
 

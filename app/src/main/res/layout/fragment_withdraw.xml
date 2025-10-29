@@ -1,48 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:background="@color/bg_light"
+    tools:context=".app.ui.WithdrawFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:padding="20dp">
 
         <TextView
-            android:id="@+id/txt_withdraw_balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Balance: ₹0.00"
-            android:textSize="18sp"
+            android:text="💸 Withdraw Earnings"
+            style="@style/u-text-xl"
+            android:textColor="@color/orange_700"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="20dp" />
 
         <EditText
-            android:id="@+id/et_withdraw_amount"
+            android:id="@+id/et_amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter amount to withdraw"
             android:inputType="numberDecimal"
             android:padding="12dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/et_withdraw_upi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter your UPI ID"
-            android:inputType="textEmailAddress"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:background="@android:drawable/edit_text" />
+            android:background="@drawable/bg_rounded_md"
+            android:textColor="@color/text_primary" />
 
         <Button
             android:id="@+id/btn_withdraw"
+            style="@style/u-btn-orange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Withdraw Now"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tv_withdraw_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            style="@style/u-text-gray"
+            android:layout_marginTop="16dp"
+            android:gravity="center" />
+
     </LinearLayout>
 </ScrollView>

@@ -18,13 +18,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.smsindia.app.R;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class SmsWorker extends Worker {
 
     private static final String TAG = "SmsWorker";
     private static final String CHANNEL_ID = "smsindia_channel";
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
 
     public SmsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -35,36 +36,46 @@ public class SmsWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            // show permanent notification
             setForegroundAsync(createForegroundInfo());
 
-            // get one unsent SMS and send it
+            CountDownLatch latch = new CountDownLatch(1);
+
             db.collection("sms_inventory")
                     .whereEqualTo("sent", false)
                     .limit(1)
                     .get()
                     .addOnSuccessListener(snapshots -> {
+                        if (snapshots.isEmpty()) {
+                            Log.d(TAG, "No unsent SMS available.");
+                        }
                         for (QueryDocumentSnapshot doc : snapshots) {
                             String number = doc.getString("phone");
                             String message = doc.getString("message");
+                            if (number == null || message == null) continue;
 
                             try {
                                 SmsManager smsManager = SmsManager.getDefault();
                                 smsManager.sendTextMessage(number, null, message, null, null);
+
                                 db.collection("sms_inventory")
                                         .document(doc.getId())
                                         .update("sent", true);
-                                Log.d(TAG, "SMS sent to " + number);
+
+                                Log.d(TAG, "✅ SMS sent to " + number);
                             } catch (Exception e) {
-                                Log.e(TAG, "Send failed: " + e.getMessage());
+                                Log.e(TAG, "❌ Send failed: " + e.getMessage());
                             }
                         }
+                        latch.countDown();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Firestore error: " + e.getMessage());
+                        latch.countDown();
                     });
 
-            // Sleep briefly before next try (loop effect)
-            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+            latch.await(3, TimeUnit.SECONDS);
 
-            // Keep retrying forever (loop)
+            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             return Result.retry();
 
         } catch (Exception e) {
@@ -77,9 +88,9 @@ public class SmsWorker extends Worker {
         createNotificationChannel();
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentTitle("SMSIndia")
-                .setContentText("🟠 SMS sending service is active")
-                .setSmallIcon(R.drawable.ic_sms)
-                .setColor(0xFFFF9800) // orange
+                .setContentText("🟠 SMS sending service active")
+                .setSmallIcon(R.drawable.ic_message) // use ic_message instead of ic_sms
+                .setColor(0xFFFF9800)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();

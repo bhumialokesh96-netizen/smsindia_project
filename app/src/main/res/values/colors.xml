@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="md_theme_primary">#2E7D32</color>
-    <color name="md_theme_onPrimary">#FFFFFF</color>
-    <color name="md_theme_secondary">#FF9800</color>
-    <color name="md_theme_background">#F7F9FB</color>
-    <color name="md_theme_surface">#FFFFFF</color>
-    <color name="md_theme_error">#B00020</color>
+    <!-- 🟠 Brand Colors -->
+    <color name="orange_50">#FFF7ED</color>
+    <color name="orange_100">#FFEDD5</color>
+    <color name="orange_300">#FDBA74</color>
+    <color name="orange_500">#F97316</color>
+    <color name="orange_600">#EA580C</color>
+    <color name="orange_700">#C2410C</color>
+
+    <!-- ⚫ Text Colors -->
+    <color name="text_primary">#1E1E1E</color>
+    <color name="text_gray">#6B7280</color>
+    <color name="text_light">#9CA3AF</color>
+
+    <!-- ⚪ Backgrounds -->
+    <color name="bg_light">#FAFAFA</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- ✅ Status Colors -->
+    <color name="success_green">#16A34A</color>
+    <color name="error_red">#DC2626</color>
 </resources>

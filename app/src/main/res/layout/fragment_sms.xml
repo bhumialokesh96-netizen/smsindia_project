@@ -1,42 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
-    android:background="#FFFFFF"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_light"
+    tools:context=".app.ui.SMSFragment">
 
-    <TextView
-        android:id="@+id/status_text"
-        android:text="⏸️ Not started"
-        android:textColor="#FF9800"
-        android:textSize="18sp"
-        android:layout_marginBottom="20dp"
-        android:fontFamily="sans-serif-medium" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_start"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="▶️ Start Sending"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#FF9800"
-        app:cornerRadius="16dp"
-        android:layout_marginBottom="10dp" />
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center_horizontal">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="⏹️ Stop Sending"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#E64A19"
-        app:cornerRadius="16dp" />
+        <TextView
+            android:text="📤 SMS Sender"
+            style="@style/u-text-xl"
+            android:textColor="@color/orange_700"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
-</LinearLayout>
+        <TextView
+            android:text="Select your SIM and start automatic SMS sending"
+            style="@style/u-text-gray"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_start"
+                style="@style/u-btn-orange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▶ Start" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:id="@+id/btn_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏸ Stop"
+                android:textColor="@color/orange_700"
+                android:backgroundTint="@color/white"
+                android:strokeColor="@color/orange_700"
+                android:elevation="2dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waiting to start..."
+            style="@style/u-text-gray"
+            android:layout_marginTop="30dp" />
+
+    </LinearLayout>
+</ScrollView>
