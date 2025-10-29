@@ -32,7 +32,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="space_between|center_vertical">
+            android:gravity="center_vertical"
+            android:layout_gravity="space_between">
 
             <TextView
                 android:id="@+id/tv_task_reward"
@@ -42,7 +43,7 @@
 
             <Button
                 android:id="@+id/btn_start_task"
-                style="@style/u_btn_orange-sm"
+                style="@style/u_btn_orange_sm"
                 android:text="Start" />
         </LinearLayout>
 
