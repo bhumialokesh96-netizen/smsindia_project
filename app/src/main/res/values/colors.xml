@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    
     <!-- 🎨 Core Material Theme Colors -->
+    <color name="orange_100">#FFF3E0</color>
+    <color name="orange_300">#FFB74D</color>
     <color name="md_theme_primary">#FF6D00</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_secondary">#FF9100</color>
     <color name="md_theme_onSecondary">#FFFFFF</color>
     <color name="md_theme_background">#FFF8F5</color>
     <color name="md_theme_onBackground">#000000</color>
-
+    
     <!-- 🔸 Custom App Colors -->
     <color name="orange_700">#E65100</color>
     <color name="orange_600">#FB8C00</color>
@@ -18,5 +20,5 @@
     <color name="text_primary">#212121</color>
     <color name="text_gray">#757575</color>
     <color name="bg_light">#FFF3E0</color>
-
+    
 </resources>

@@ -2,74 +2,78 @@
 <resources>
 
     <!-- 🌞 App Theme -->
-    <style name="Theme.SMSIndia" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.SMSIndia" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
         <item name="android:statusBarColor">@color/orange_700</item>
         <item name="android:navigationBarColor">@color/orange_700</item>
         <item name="android:windowBackground">@color/bg_light</item>
     </style>
 
     <!-- 🧩 Text Utilities -->
-    <style name="u_text_sm">
+    <style name="u-text-sm">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="u_text_base">
+    <style name="u-text-base">
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="u_text_lg">
+    <style name="u-text-lg">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="u_text_xl">
+    <style name="u-text-xl">
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="u_text_gray">
+    <style name="u-text-gray">
         <item name="android:textColor">@color/text_gray</item>
     </style>
 
-    <style name="u_text_primary">
+    <style name="u-text-primary">
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <!-- 🟠 Orange Buttons -->
-    <style name="u_btn_orange" parent="Widget.MaterialComponents.Button">
+    <style name="u-btn-orange" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/orange_600</item>
         <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">12dp</item>
         <item name="android:paddingVertical">10dp</item>
         <item name="android:paddingHorizontal">16dp</item>
         <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">12dp</item>
     </style>
 
     <!-- Small Orange Button -->
-    <style name="u_btn_orange_sm" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="u-btn-orange-sm" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:backgroundTint">@color/orange_500</item>
         <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">8dp</item>
         <item name="android:paddingVertical">6dp</item>
         <item name="android:paddingHorizontal">12dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">13sp</item>
+        <item name="cornerRadius">8dp</item>
     </style>
 
     <!-- 🧱 Background Cards -->
-    <style name="u_card">
+    <style name="u-card">
         <item name="android:background">@drawable/bg_rounded_md</item>
         <item name="android:padding">16dp</item>
     </style>
 
     <!-- 📏 Margin / Padding Helpers -->
-    <style name="u_mt_2">
+    <style name="u-mt-2">
         <item name="android:layout_marginTop">8dp</item>
     </style>
 
-    <style name="u_mb_2">
+    <style name="u-mb-2">
         <item name="android:layout_marginBottom">8dp</item>
     </style>
 
-    <style name="u_p_4">
+    <style name="u-p-4">
         <item name="android:padding">16dp</item>
     </style>
 
