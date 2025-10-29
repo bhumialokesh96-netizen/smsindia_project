@@ -32,19 +32,23 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_gravity="space_between">
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tv_task_reward"
                 android:text="Reward: ₹5.00"
                 style="@style/u_text_gray"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_start_task"
-                style="@style/u_btn_orange_sm"
-                android:text="Start" />
+                style="@style/u_btn_orange-sm"
+                android:text="Start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </LinearLayout>
