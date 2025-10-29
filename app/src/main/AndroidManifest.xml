@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.smsindia.app">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ✅ Required permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -41,7 +40,7 @@
         <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
         <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
 
-        <!-- ✅ Handle auto-start after reboot (optional worker trigger) -->
+        <!-- ✅ Auto-start after reboot (optional worker trigger) -->
         <receiver
             android:name=".worker.BootReceiver"
             android:exported="false">
