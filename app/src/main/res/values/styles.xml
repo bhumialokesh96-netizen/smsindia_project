@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- ✅ App Theme -->
+    <style name="Theme.SMSIndia" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/orange_500</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/orange_700</item>
+        <item name="android:navigationBarColor">@color/orange_500</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
     <!-- 🔹 Text Styles -->
     <style name="u_text_xl">
         <item name="android:textSize">20sp</item>
