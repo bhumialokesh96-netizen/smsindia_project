@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="16dp">
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:text="Select SIM" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/sim_spinner" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Target Number" android:layout_marginTop="12dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/edit_target" android:inputType="phone" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Message" android:layout_marginTop="12dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/edit_message" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:lines="4" android:text="Hello from SMSIndia!" />
+
+        <LinearLayout android:layout_marginTop="16dp" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <Button android:id="@+id/btn_send_once" android:text="Send Once" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+            <Space android:layout_width="8dp" android:layout_height="wrap_content"/>
+            <Button android:id="@+id/btn_start" android:text="Start (loop)" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Button android:id="@+id/btn_stop" android:text="Stop Worker" android:layout_marginTop="8dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>
