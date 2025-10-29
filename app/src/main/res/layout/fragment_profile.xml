@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/tv_user_name"
             android:text="Lokesh Bhumia"
-            style="@style/u_text-xl"
+            style="@style/u_text_xl"
             android:textColor="@color/text_primary"
             android:textStyle="bold"
             android:layout_marginBottom="4dp" />
@@ -34,7 +34,7 @@
         <TextView
             android:id="@+id/tv_user_email"
             android:text="lokeshbhumia123@gmail.com"
-            style="@style/u_text-gray"
+            style="@style/u_text_gray"
             android:layout_marginBottom="24dp" />
 
         <LinearLayout
@@ -47,7 +47,7 @@
             <TextView
                 android:id="@+id/tv_balance"
                 android:text="💰 Balance: ₹0.00"
-                style="@style/u_text-lg"
+                style="@style/u_text_lg"
                 android:textColor="@color/orange_700"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
@@ -55,18 +55,18 @@
             <TextView
                 android:id="@+id/tv_tasks_completed"
                 android:text="✅ Tasks completed: 0"
-                style="@style/u_text-gray"
+                style="@style/u_text_gray"
                 android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/tv_join_date"
                 android:text="📅 Joined: --/--/----"
-                style="@style/u_text-gray" />
+                style="@style/u_text_gray" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btn_logout"
-            style="@style/u_btn-orange"
+            style="@style/u_btn_orange"
             android:text="Logout"
             android:layout_marginTop="30dp"
             android:layout_width="match_parent"

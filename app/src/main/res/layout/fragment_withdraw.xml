@@ -14,7 +14,7 @@
 
         <TextView
             android:text="💸 Withdraw Earnings"
-            style="@style/u_text-xl"
+            style="@style/u_text_xl"
             android:textColor="@color/orange_700"
             android:textStyle="bold"
             android:layout_marginBottom="20dp" />
@@ -31,7 +31,7 @@
 
         <Button
             android:id="@+id/btn_withdraw"
-            style="@style/u_btn-orange"
+            style="@style/u_btn_orange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Withdraw Now"
@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text=""
-            style="@style/u_text-gray"
+            style="@style/u_text_gray"
             android:layout_marginTop="16dp"
             android:gravity="center" />
 

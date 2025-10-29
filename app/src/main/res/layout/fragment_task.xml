@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/tv_header"
         android:text="📋 Available Tasks"
-        style="@style/u_text-xl"
+        style="@style/u_text_xl"
         android:textStyle="bold"
         android:textColor="@color/orange_700"
         android:layout_marginBottom="10dp" />
