@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1013963357851:android:494e3db14e9bfa29ed503e",
+        "mobilesdk_app_id": "1:1013963357851:android:eea4e2e566c2244aed503e",
         "android_client_info": {
-          "package_name": "com.rupeedesk7.smsapp"
+          "package_name": "com.smsindia.app"
         }
       },
       "oauth_client": [],
