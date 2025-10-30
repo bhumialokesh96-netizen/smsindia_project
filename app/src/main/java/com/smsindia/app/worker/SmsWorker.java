@@ -21,14 +21,18 @@ import com.smsindia.app.R;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Background worker that fetches unsent SMS tasks from Firestore
+ * and sends them securely. Runs as a foreground task for Android O+.
+ */
 public class SmsWorker extends Worker {
 
     private static final String TAG = "SmsWorker";
     private static final String CHANNEL_ID = "smsindia_channel";
     private final FirebaseFirestore db;
 
-    public SmsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-        super(context, workerParams);
+    public SmsWorker(@NonNull Context context, @NonNull WorkerParameters params) {
+        super(context, params);
         db = FirebaseFirestore.getInstance();
     }
 
@@ -36,7 +40,10 @@ public class SmsWorker extends Worker {
     @Override
     public Result doWork() {
         try {
+            // Ensure Foreground service notification (required on Android O+)
             setForegroundAsync(createForegroundInfo());
+
+            Log.d(TAG, "🚀 SmsWorker started");
 
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -46,26 +53,32 @@ public class SmsWorker extends Worker {
                     .get()
                     .addOnSuccessListener(snapshots -> {
                         if (snapshots.isEmpty()) {
-                            Log.d(TAG, "No unsent SMS available.");
+                            Log.d(TAG, "No unsent SMS found");
                         }
+
                         for (QueryDocumentSnapshot doc : snapshots) {
                             String number = doc.getString("phone");
                             String message = doc.getString("message");
-                            if (number == null || message == null) continue;
+
+                            if (number == null || message == null || number.trim().isEmpty()) {
+                                Log.w(TAG, "Invalid SMS entry skipped");
+                                continue;
+                            }
 
                             try {
-                                SmsManager smsManager = SmsManager.getDefault();
-                                smsManager.sendTextMessage(number, null, message, null, null);
+                                SmsManager sms = SmsManager.getDefault();
+                                sms.sendTextMessage(number, null, message, null, null);
 
                                 db.collection("sms_inventory")
                                         .document(doc.getId())
                                         .update("sent", true);
 
-                                Log.d(TAG, "✅ SMS sent to " + number);
+                                Log.i(TAG, "✅ Sent to " + number);
                             } catch (Exception e) {
                                 Log.e(TAG, "❌ Send failed: " + e.getMessage());
                             }
                         }
+
                         latch.countDown();
                     })
                     .addOnFailureListener(e -> {
@@ -73,40 +86,46 @@ public class SmsWorker extends Worker {
                         latch.countDown();
                     });
 
-            latch.await(3, TimeUnit.SECONDS);
+            // Wait a few seconds for Firebase callback
+            latch.await(4, TimeUnit.SECONDS);
 
-            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+            // Add short delay to prevent hammering
+            Thread.sleep(2000);
+
+            // Retry periodically for new tasks
             return Result.retry();
 
         } catch (Exception e) {
-            Log.e(TAG, "Worker crashed: " + e.getMessage());
+            Log.e(TAG, "Worker crashed: " + e.getMessage(), e);
             return Result.failure();
         }
     }
 
+    /** Creates persistent foreground notification for the worker */
     private ForegroundInfo createForegroundInfo() {
         createNotificationChannel();
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setContentTitle("SMSIndia")
-                .setContentText("🟠 SMS sending service active")
-                .setSmallIcon(R.drawable.ic_message) // use ic_message instead of ic_sms
+                .setContentTitle("SMS India Service")
+                .setContentText("📡 Sending SMS in background")
+                .setSmallIcon(R.drawable.ic_message)
                 .setColor(0xFFFF9800)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
+
         return new ForegroundInfo(1, notification);
     }
 
+    /** Builds notification channel on O+ */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
+            NotificationChannel ch = new NotificationChannel(
                     CHANNEL_ID,
-                    "SMSIndia Background Service",
+                    "SMS India Background",
                     NotificationManager.IMPORTANCE_LOW
             );
-            NotificationManager manager =
-                    getApplicationContext().getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(channel);
+            NotificationManager nm = getApplicationContext().getSystemService(NotificationManager.class);
+            if (nm != null) nm.createNotificationChannel(ch);
         }
     }
 }
