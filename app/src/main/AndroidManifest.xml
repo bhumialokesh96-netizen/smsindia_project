@@ -20,7 +20,7 @@
         android:theme="@style/Theme.SMSIndia"
         tools:targetApi="34">
 
-        <!-- ✅ Firebase initialization -->
+        <!-- ✅ Firebase -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
@@ -36,18 +36,19 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ WorkManager receiver fix -->
+        <!-- ✅ WorkManager Receivers -->
         <receiver
             android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
             android:enabled="true"
             android:exported="true"
             tools:replace="android:enabled,android:exported" />
 
-        <!-- ✅ Required for background SMS service -->
+        <!-- ✅ Fix for SystemJobService conflict -->
         <service
             android:name="androidx.work.impl.background.systemjob.SystemJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false" />
+            android:exported="true"
+            tools:replace="android:exported" />
 
     </application>
 </manifest>
