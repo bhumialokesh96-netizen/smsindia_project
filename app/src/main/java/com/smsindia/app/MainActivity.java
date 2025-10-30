@@ -3,20 +3,23 @@ package com.smsindia.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.smsindia.app.R;
 import com.smsindia.app.ui.SMSFragment;
 import com.smsindia.app.ui.TaskFragment;
 import com.smsindia.app.ui.ProfileFragment;
 import com.smsindia.app.ui.WithdrawFragment;
 
 public class MainActivity extends AppCompatActivity {
+
     private ActivityResultLauncher<String> smsPermissionLauncher;
     private ActivityResultLauncher<String> phoneStateLauncher;
 
@@ -25,33 +28,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ✅ Register permission launchers
+        // ✅ Register permission launchers (no auto-launch yet)
         smsPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
-                result -> {}
+                granted -> {
+                    if (!granted) {
+                        Toast.makeText(this, "SMS permission required to earn.", Toast.LENGTH_SHORT).show();
+                    }
+                }
         );
+
         phoneStateLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
-                granted -> {}
+                granted -> {
+                    if (!granted) {
+                        Toast.makeText(this, "Phone permission required for account verification.", Toast.LENGTH_SHORT).show();
+                    }
+                }
         );
 
-        // ✅ Request permissions if not already granted
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            smsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            phoneStateLauncher.launch(Manifest.permission.READ_PHONE_STATE);
-        }
-
-        // ✅ Setup bottom navigation
+        // ✅ Bottom navigation setup
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selected;
+            int id = item.getItemId();
 
-            int id = item.getItemId(); // 👈 prevents "constant expression" compile error
             if (id == R.id.nav_sms) {
                 selected = new SMSFragment();
             } else if (id == R.id.nav_task) {
@@ -78,6 +79,19 @@ public class MainActivity extends AppCompatActivity {
                     .beginTransaction()
                     .replace(R.id.fragment_container, new SMSFragment())
                     .commit();
+        }
+    }
+
+    // 🔹 Called by fragments (e.g., TaskFragment when "Start" clicked)
+    public void requestSmsAndPhonePermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            smsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            phoneStateLauncher.launch(Manifest.permission.READ_PHONE_STATE);
         }
     }
 }
